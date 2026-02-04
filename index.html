@@ -61,7 +61,46 @@
         .custom-file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
         /* =========================================
-           SECTION 3: LAYOUT & HEADER
+           SECTION 3: SWIPE BUTTON UI (NEW)
+           ========================================= */
+        .swipe-container {
+            position: relative; width: 100%; height: 60px; background: #e0e0e0; border-radius: 30px; 
+            margin: 20px 0 100px 0; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        [data-theme="dark"] .swipe-container { background: #333; }
+        .swipe-text {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--text-muted); font-size: 1rem; pointer-events: none; z-index: 1;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .swipe-handle {
+            position: absolute; left: 0; top: 0; height: 60px; width: 70px; 
+            background: var(--primary); border-radius: 30px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;
+            box-shadow: 0 0 10px rgba(255,87,34,0.4); z-index: 2; transition: background 0.2s;
+        }
+        .swipe-handle:active { background: var(--primary-dark); }
+        .swipe-bg-active {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0; 
+            background: rgba(255,87,34,0.2); z-index: 0;
+        }
+
+        /* Success Animation Overlay */
+        #success-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .checkmark-circle {
+            width: 80px; height: 80px; border-radius: 50%; border: 4px solid #00C853;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .checkmark-icon { font-size: 40px; color: #00C853; }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+        /* =========================================
+           SECTION 4: LAYOUT & HEADER
            ========================================= */
         header { background: var(--bg-card); padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; border-bottom: 1px solid var(--border-color); }
         .app-logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
@@ -73,7 +112,7 @@
         .page-header h3 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
 
         /* =========================================
-           SECTION 4: ADDRESS CARD UI
+           SECTION 5: ADDRESS CARD UI
            ========================================= */
         .address-display-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow); transition: 0.3s; }
         .address-info-left { display: flex; align-items: center; gap: 15px; flex: 1; }
@@ -85,7 +124,7 @@
         .address-edit-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* =========================================
-           SECTION 5: PROFILE PAGE
+           SECTION 6: PROFILE PAGE
            ========================================= */
         .profile-new-wrapper { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,87,34,0.3); color: white; margin-bottom: 25px; position: relative; overflow: hidden; }
         .profile-new-wrapper::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); animation: rotate 20s linear infinite; }
@@ -111,7 +150,7 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         /* =========================================
-           SECTION 6: PRODUCT & CHECKOUT UI
+           SECTION 7: PRODUCT & CHECKOUT UI
            ========================================= */
         .search-bar { width: 100%; padding: 14px 20px; border-radius: 30px; border: none; background: var(--bg-card); margin-bottom: 20px; box-shadow: var(--shadow); font-size: 0.95rem; color: var(--text-main); }
         .filters { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; margin-bottom: 20px; }
@@ -126,13 +165,18 @@
         .product-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; color: var(--text-main); }
         .product-meta { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
         .product-price { color: var(--primary); font-weight: 700; font-size: 1.05rem; }
+        
+        /* New Qty Panel Control */
         .btn-add { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; box-shadow: 0 2px 8px rgba(255, 87, 34, 0.3); }
+        .qty-panel { display: flex; align-items: center; background: var(--input-bg); border-radius: 20px; border: 1px solid var(--primary); height: 36px; overflow: hidden; }
+        .qty-btn-mini { width: 30px; height: 100%; border: none; background: transparent; color: var(--primary); font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qty-val-mini { font-size: 0.9rem; font-weight: 700; padding: 0 5px; min-width: 20px; text-align: center; color: var(--text-main); }
+        .qty-btn-mini:active { background: rgba(255,87,34,0.1); }
 
         .checkout-box { background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
         .section-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
         .section-title i { color: var(--primary); }
 
-        /* CART IMAGE ORANGE BORDER */
         .cart-item-img { border: 2px solid var(--primary); border-radius: 10px; object-fit: cover; padding: 1px; }
 
         .bill-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: var(--text-muted); }
@@ -159,7 +203,7 @@
         .pay-option.selected .radio-circle::after { content: ''; position: absolute; inset: 3px; background: var(--primary); border-radius: 50%; }
 
         /* =========================================
-           SECTION 7: ORDERS & NAV & MISC
+           SECTION 8: ORDERS & NAV & MISC
            ========================================= */
         .order-card-new { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 25px; overflow: hidden; position: relative; border: 1px solid var(--border-color); }
         .order-banner { width: 100%; height: 130px; object-fit: cover; display: block; }
@@ -219,11 +263,18 @@
         .toast { background: #333; color: white; padding: 12px 25px; border-radius: 30px; margin-bottom: 10px; font-size: 0.9rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         #orders-list, #history-list { padding-bottom: 30px; }
         
-        /* Location & Map */
-        .location-box { background: #e3f2fd; border: 1px dashed #2196F3; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; color: #1565C0; font-weight: 500; font-size: 0.9rem; justify-content: center; }
-        .location-box.active { background: #e8f5e9; border-color: var(--success); color: var(--success); }
+        /* Premium Location & Map */
+        .premium-location-box { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 2px dashed #2196F3; padding: 15px; border-radius: 16px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; margin-bottom: 10px; }
+        .premium-location-box:active { transform: scale(0.98); }
+        .premium-location-box.active { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-color: #00C853; }
+        .loc-title { font-size: 0.95rem; font-weight: 700; color: #1565C0; margin-bottom: 5px; }
+        .premium-location-box.active .loc-title { color: #2E7D32; }
+        .loc-subtitle { font-size: 0.8rem; color: #555; }
         .map-preview-frame { width: 100%; height: 180px; border: none; border-radius: 12px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .share-loc-btn { width: 100%; padding: 10px; border: 1px dashed var(--primary); color: var(--primary); background: rgba(255,87,34,0.1); border-radius: 8px; font-weight: 600; margin-bottom: 10px; cursor: pointer; }
+        
+        /* Map Address Text */
+        .map-address-display { font-size: 0.85rem; color: var(--text-muted); background: var(--input-bg); padding: 10px; border-radius: 8px; margin-top: 5px; border: 1px solid var(--border-color); text-align: center; }
 
         /* Rating Modal */
         .rating-modal-content { background: var(--bg-card); width:90%; max-width:380px; border-radius:24px; padding:30px 20px; text-align:center; color:var(--text-main); box-shadow: 0 15px 40px rgba(0,0,0,0.3); position: relative; }
@@ -242,6 +293,13 @@
 
     <div id="toast-container"></div>
     <div id="global-loader" class="loader-overlay hidden"><div class="spinner"></div><p style="font-weight:600; color:white">Please wait...</p></div>
+    
+    <!-- SUCCESS ANIMATION OVERLAY -->
+    <div id="success-overlay">
+        <div class="checkmark-circle"><i class="fas fa-check checkmark-icon"></i></div>
+        <h2 style="font-weight:700; margin-bottom:5px;">Order Placed!</h2>
+        <p style="opacity:0.8">Redirecting to orders...</p>
+    </div>
 
     <!-- SPLASH SCREEN -->
     <div id="splash-screen">
@@ -332,10 +390,15 @@
                         <span style="font-size:0.8rem; color:var(--primary); cursor:pointer; font-weight:600" onclick="prepareAddressEdit()">CHANGE</span>
                     </div>
                     <div id="co-address-display" style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;"></div>
-                    <div class="location-box" onclick="getLocation()" id="loc-box">
-                        <i class="fas fa-crosshairs"></i> <span id="loc-text">Share Live Location (Optional)</span>
+                    
+                    <!-- PREMIUM LOCATION BOX -->
+                    <p style="font-size:0.8rem; color:var(--primary); font-weight:600; text-align:center; margin-bottom:5px;">অনুগ্রহ করে লাইভ লোকেশন টি অন করে দিন</p>
+                    <div class="premium-location-box" onclick="getLocation()" id="loc-box">
+                        <div class="loc-title" id="loc-title-text"><i class="fas fa-map-marker-alt"></i> Share Live Location</div>
+                        <div class="loc-subtitle" id="loc-status-text">Tap to enable map</div>
                     </div>
                     <div id="loc-map-preview" class="hidden"></div>
+                    <div id="loc-address-text" class="map-address-display hidden"></div>
                 </div>
 
                 <div class="checkout-box">
@@ -368,9 +431,12 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" style="margin: 20px 0 100px 0; padding:16px; font-size:1.1rem;" onclick="placeOrder()">
-                    Place Order <i class="fas fa-arrow-right"></i>
-                </button>
+                <!-- SWIPE TO ORDER BUTTON -->
+                <div class="swipe-container" id="swipe-btn">
+                    <div class="swipe-bg-active" id="swipe-bg"></div>
+                    <div class="swipe-text">Slide to Confirm <i class="fas fa-arrow-right" style="margin-left:8px;"></i></div>
+                    <div class="swipe-handle" id="swipe-handle"><i class="fas fa-chevron-right"></i></div>
+                </div>
             </div>
 
             <!-- === ORDERS PAGES === -->
@@ -394,7 +460,6 @@
                     </div>
                 </div>
                 
-                <!-- SAVED ADDRESS CARD (Initially Hidden until loaded) -->
                 <div id="saved-address-card" class="address-display-card hidden">
                     <div class="address-info-left">
                         <div class="address-icon-box"><i class="fas fa-map-marked-alt"></i></div>
@@ -405,7 +470,6 @@
                     </div>
                     <button class="address-edit-btn" onclick="prepareAddressEdit()"><i class="fas fa-pencil-alt"></i> Edit</button>
                 </div>
-                <!-- ADD ADDRESS BTN (If no address) -->
                 <div id="add-address-btn-wrapper" class="hidden" style="margin-bottom:20px;">
                     <button class="btn btn-outline" onclick="showPage('address')"><i class="fas fa-plus"></i> Add Delivery Address</button>
                 </div>
@@ -479,6 +543,7 @@
 
         <nav class="bottom-nav">
             <a class="nav-item active" onclick="showPage('home')" id="nav-home"><i class="fas fa-home"></i>Home</a>
+            <a class="nav-item" onclick="toggleCart(true)"><i class="fas fa-shopping-cart"></i>Cart</a>
             <a class="nav-item" onclick="showPage('orders')" id="nav-orders"><i class="fas fa-shopping-bag"></i>Orders</a>
             <a class="nav-item" onclick="showPage('profile')" id="nav-profile"><i class="fas fa-user"></i>Profile</a>
         </nav>
@@ -536,7 +601,14 @@
         window.showToast=(m,t='success')=>{const c=document.getElementById('toast-container'),el=document.createElement('div');el.className='toast';el.style.background=t==='error'?'var(--primary)':'#333';el.innerHTML=m;c.appendChild(el);setTimeout(()=>el.remove(),3000);};
         const toggleLoader=s=>document.getElementById('global-loader').classList.toggle('hidden',!s);
         const formatPrice=p=>`৳ ${p}`;
-        window.showPage=id=>{document.querySelectorAll('.page-section').forEach(e=>e.classList.add('hidden'));document.getElementById(`page-${id}`).classList.remove('hidden');document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));if(document.getElementById(`nav-${id}`))document.getElementById(`nav-${id}`).classList.add('active');window.scrollTo(0,0);};
+        window.showPage=id=>{
+            document.querySelectorAll('.page-section').forEach(e=>e.classList.add('hidden'));
+            document.getElementById(`page-${id}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+            if(document.getElementById(`nav-${id}`))document.getElementById(`nav-${id}`).classList.add('active');
+            window.scrollTo(0,0);
+            if(id==='checkout') initSwipeButton(); // Init swipe when checkout opens
+        };
 
         // Splash
         window.addEventListener('load', () => { setTimeout(() => { document.getElementById('splash-screen').classList.add('fade-out'); }, 2500); });
@@ -585,14 +657,7 @@
         
         window.handleLogin=async()=>{const e=document.getElementById('auth-email').value,p=document.getElementById('auth-password').value;if(!e||!p)return;toggleLoader(true);try{await signInWithEmailAndPassword(auth,e,p);}catch(e){showToast(e.message,"error");}finally{toggleLoader(false);}};
         window.handleSignup=async()=>{const e=document.getElementById('auth-email').value,p=document.getElementById('auth-password').value;if(!e||!p)return;toggleLoader(true);try{const c=await createUserWithEmailAndPassword(auth,e,p);await set(ref(db,`users/${c.user.uid}/profile`),{email:e,createdAt:serverTimestamp()});showToast("Account created");}catch(e){showToast(e.message,"error");}finally{toggleLoader(false);}};
-        
-        // LOGOUT WITH FULL RESET
-        window.handleLogout=()=> {
-            toggleLoader(true);
-            signOut(auth).then(() => {
-                window.location.reload(); // Hard refresh to ensure no old data persists
-            });
-        };
+        window.handleLogout=()=> { toggleLoader(true); signOut(auth).then(() => { window.location.reload(); }); };
 
         /* =========================================
            SECTION: DATA FETCHING
@@ -600,24 +665,16 @@
         function fetchSettings(){onValue(ref(db,'settings/app_config'),s=>{if(s.exists())appSettings={...appSettings,...s.val()};});}
         function fetchProducts(){onValue(ref(db,'products'),s=>{products=[];if(s.exists()){const d=s.val();for(const k in d)products.push({id:k,...d[k]});}renderProducts(products);});}
         
-        // USER PROFILE & ADDRESS FETCH
         function fetchUserProfile(uid){
             onValue(ref(db,`users/${uid}`), s=>{
                 if(!s.exists()) return;
                 currentUserProfile = s.val();
                 const p = currentUserProfile.profile || {};
-                
-                // Profile Header
                 document.getElementById('profile-display-name').innerText = p.displayName || 'Guest';
                 document.getElementById('profile-display-email').innerText = p.email;
-                if(p.avatarUrl){
-                    document.getElementById('profile-avatar-img').src = p.avatarUrl;
-                    document.getElementById('edit-avatar-preview').src = p.avatarUrl;
-                }
+                if(p.avatarUrl){ document.getElementById('profile-avatar-img').src = p.avatarUrl; document.getElementById('edit-avatar-preview').src = p.avatarUrl; }
                 document.getElementById('prof-name').value = p.displayName || '';
                 document.getElementById('prof-phone').value = p.phone || '';
-
-                // Address Card Rendering
                 renderAddressCardUI();
             });
         }
@@ -663,18 +720,9 @@
             document.getElementById('other-area-field').classList.toggle('hidden', v === 'DOHS' || !v);
         };
         window.saveAddress = async () => {
-            const a = {
-                area: document.getElementById('addr-area').value,
-                contactNumber: document.getElementById('addr-contact-number').value
-            };
+            const a = { area: document.getElementById('addr-area').value, contactNumber: document.getElementById('addr-contact-number').value };
             if(!a.area || !a.contactNumber) return showToast("Fill all fields", "error");
-            if(a.area === 'DOHS'){
-                a.avenue = document.getElementById('addr-dohs-avenue').value;
-                a.road = document.getElementById('addr-dohs-road').value;
-                a.house = document.getElementById('addr-dohs-house').value;
-            } else {
-                a.details = document.getElementById('addr-details').value;
-            }
+            if(a.area === 'DOHS'){ a.avenue = document.getElementById('addr-dohs-avenue').value; a.road = document.getElementById('addr-dohs-road').value; a.house = document.getElementById('addr-dohs-house').value; } else { a.details = document.getElementById('addr-details').value; }
             const f = document.getElementById('house-image-input').files[0];
             toggleLoader(true);
             try {
@@ -687,18 +735,53 @@
         };
 
         /* =========================================
-           SECTION: PRODUCT & CART UI
+           SECTION: PRODUCT & CART UI (NEW QTY)
            ========================================= */
-        function renderProducts(list){document.getElementById('product-list').innerHTML=list.map(p=>`<div class="product-card"><img src="${p.image}" class="product-img"><div class="product-info"><div class="product-name">${p.name}</div><div class="product-meta"><span class="product-price">${formatPrice(p.price)}</span><button class="btn-add" onclick="addToCart('${p.id}')"><i class="fas fa-plus"></i></button></div></div></div>`).join('');}
+        function renderProducts(list){
+            document.getElementById('product-list').innerHTML=list.map(p=>{
+                const inCart = cart.find(x=>x.productId===p.id);
+                const btnHtml = inCart 
+                    ? `<div class="qty-panel"><button class="qty-btn-mini" onclick="updateCartQty('${p.id}', -1)">-</button><span class="qty-val-mini">${inCart.qty}</span><button class="qty-btn-mini" onclick="updateCartQty('${p.id}', 1)">+</button></div>`
+                    : `<button class="btn-add" onclick="updateCartQty('${p.id}', 1)"><i class="fas fa-plus"></i></button>`;
+                
+                return `<div class="product-card">
+                    <img src="${p.image}" class="product-img">
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-meta">
+                            <span class="product-price">${formatPrice(p.price)}</span>
+                            <div id="btn-area-${p.id}">${btnHtml}</div>
+                        </div>
+                    </div>
+                </div>`
+            }).join('');
+        }
+        
         window.filterProducts = (q) => renderProducts(products.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())));
         window.setCategory = (c) => { document.querySelectorAll('.filter-chip').forEach(e=>e.classList.remove('active')); event.target.classList.add('active'); renderProducts(c==='all'?products:products.filter(p=>p.category===c)); };
 
-        window.addToCart=id=>{const p=products.find(x=>x.id===id),e=cart.find(x=>x.productId===id);e?e.qty++:cart.push({productId:id,name:p.name,price:p.price,image:p.image,qty:1});localStorage.setItem('cart',JSON.stringify(cart));updateCartUI();showToast("Added to cart");};
+        // NEW: Handle add/minus/plus with no animation
+        window.updateCartQty = (id, change) => {
+            const p = products.find(x=>x.id===id);
+            let item = cart.find(x=>x.productId===id);
+            
+            if(!item && change > 0) {
+                cart.push({productId:id,name:p.name,price:p.price,image:p.image,qty:1});
+            } else if(item) {
+                item.qty += change;
+                if(item.qty <= 0) cart = cart.filter(x=>x.productId!==id);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            
+            // Re-render specifically this button area or whole list (using whole list for simplicity to sync state)
+            renderProducts(products); 
+        };
         
         function updateCartUI(){
             document.getElementById('header-cart-count').innerText=cart.reduce((a,b)=>a+b.qty,0);
             const c=document.getElementById('cart-items-container'),t=cart.reduce((a,b)=>a+(b.price*b.qty),0);
-            // UPDATED: Added 'cart-item-img' class for Orange Border
             c.innerHTML=cart.length?cart.map(i=>`<div style="display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border-color); align-items:center;"><img src="${i.image}" class="cart-item-img" width="60" height="60"><div style="flex:1"><div style="font-weight:600;">${i.name}</div><div style="color:var(--primary);">${formatPrice(i.price)} x ${i.qty}</div></div><div style="font-weight:700">${formatPrice(i.price*i.qty)}</div></div>`).join(''):"<p class='text-center' style='margin-top:20px'>Your cart is empty</p>";
             document.getElementById('cart-total-display').innerText=formatPrice(t);
             
@@ -783,24 +866,38 @@
             calculateCheckoutTotal();
         };
 
-        // LOCATION & MAP LOGIC
+        // LOCATION & MAP LOGIC (UPDATED)
         window.getLocation=()=>{
-            const box=document.getElementById('loc-box'), txt=document.getElementById('loc-text'), mapDiv=document.getElementById('loc-map-preview');
+            const box=document.getElementById('loc-box'), title=document.getElementById('loc-title-text'), status=document.getElementById('loc-status-text'), mapDiv=document.getElementById('loc-map-preview'), addrTxt=document.getElementById('loc-address-text');
             if(!navigator.geolocation) return;
-            txt.innerText="Getting location...";
-            navigator.geolocation.getCurrentPosition(p=>{
+            
+            status.innerText="Loading Map...";
+            title.innerText="Locating...";
+            
+            navigator.geolocation.getCurrentPosition(async p=>{
                 const lat = p.coords.latitude;
                 const lng = p.coords.longitude;
                 locationData={enabled:true, lat:lat, lng:lng};
                 
                 box.classList.add('active'); 
-                txt.innerText="Location Attached ✓";
+                title.innerHTML=`<i class="fas fa-check-circle"></i> Live Location Attached`;
+                status.innerText="Map loaded below";
                 
-                // Show Map Preview
+                // Show Map
                 mapDiv.classList.remove('hidden');
                 mapDiv.innerHTML = `<iframe class="map-preview-frame" src="https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed"></iframe>`;
                 
-            },e=>{ txt.innerText="Share Live Location (Optional)"; });
+                // Get Address from OpenStreetMap (Free)
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                    const data = await res.json();
+                    if(data && data.display_name) {
+                        addrTxt.classList.remove('hidden');
+                        addrTxt.innerHTML = `<b>Google Map অনুযায়ী ঠিকানা:</b><br>${data.display_name}`;
+                    }
+                } catch(e) { console.log(e); }
+                
+            },e=>{ status.innerText="Failed. Try enabling GPS."; });
         };
 
         // ADD LOCATION LATER (FROM ORDER LIST)
@@ -818,8 +915,70 @@
             }, e => { toggleLoader(false); showToast("Could not get location", "error"); });
         };
 
+        // SWIPE BUTTON LOGIC
+        function initSwipeButton() {
+            const btn = document.getElementById('swipe-btn');
+            const handle = document.getElementById('swipe-handle');
+            const bg = document.getElementById('swipe-bg');
+            if(!btn || !handle) return;
+            
+            let isDragging = false, startX, containerWidth;
+            
+            const startDrag = (e) => {
+                isDragging = true;
+                startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+                containerWidth = btn.offsetWidth - handle.offsetWidth;
+            };
+            
+            const moveDrag = (e) => {
+                if(!isDragging) return;
+                // Prevent scrolling while swiping
+                if(e.type === 'touchmove') e.preventDefault(); 
+                
+                let currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+                let diff = currentX - startX;
+                if(diff < 0) diff = 0;
+                if(diff > containerWidth) diff = containerWidth;
+                
+                handle.style.left = diff + 'px';
+                bg.style.width = diff + 'px';
+                
+                if(diff >= containerWidth - 5) {
+                    isDragging = false;
+                    handle.style.left = containerWidth + 'px'; // Snap to end
+                    placeOrder();
+                }
+            };
+            
+            const endDrag = () => {
+                if(!isDragging) return;
+                isDragging = false;
+                handle.style.transition = 'left 0.3s, width 0.3s';
+                bg.style.transition = 'width 0.3s';
+                handle.style.left = '0px';
+                bg.style.width = '0px';
+                setTimeout(() => {
+                    handle.style.transition = '';
+                    bg.style.transition = '';
+                }, 300);
+            };
+
+            handle.addEventListener('mousedown', startDrag);
+            handle.addEventListener('touchstart', startDrag);
+            document.addEventListener('mousemove', moveDrag);
+            document.addEventListener('touchmove', moveDrag, {passive: false});
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
         window.placeOrder = async () => {
-            if(!selectedPayment) return showToast("Select payment method", "error");
+            if(!selectedPayment) {
+                // Reset swipe if validation fails
+                document.getElementById('swipe-handle').style.left = '0';
+                document.getElementById('swipe-bg').style.width = '0';
+                return showToast("Select payment method", "error");
+            }
+
             const sub=cart.reduce((a,b)=>a+b.price*b.qty,0);
             const del=Number(appSettings.deliveryCharge)||35;
             const preGrand = sub + del + riderTip;
@@ -831,7 +990,11 @@
             if(selectedPayment !== 'cod'){ 
                 const s=document.getElementById(`sender-${selectedPayment}`).value; 
                 const t=document.getElementById(`trx-${selectedPayment}`).value; 
-                if(!s||!t) return showToast("Enter payment details","error"); 
+                if(!s||!t) {
+                    document.getElementById('swipe-handle').style.left = '0';
+                    document.getElementById('swipe-bg').style.width = '0';
+                    return showToast("Enter payment details","error"); 
+                }
                 payInfo={ ...payInfo, senderNumber:s, trxId:t, amount:preGrand, cashOutCharge:finalCashOutFee, finalPayable:grand, adminNumber:appSettings.paymentNumbers[selectedPayment] }; 
             } else { payInfo.status='cod'; payInfo.finalPayable = grand; }
             
@@ -844,15 +1007,36 @@
                     payment:payInfo, location:locationData, status:'pending', createdAt:serverTimestamp() 
                 });
                 cart=[];localStorage.removeItem('cart');updateCartUI(); 
-                // Reset checkout fields
+                
+                // RESET UI
                 locationData={enabled:false}; 
                 document.getElementById('loc-map-preview').innerHTML = "";
                 document.getElementById('loc-map-preview').classList.add('hidden');
+                document.getElementById('loc-address-text').innerHTML = "";
+                document.getElementById('loc-address-text').classList.add('hidden');
                 document.getElementById('loc-box').classList.remove('active');
-                document.getElementById('loc-text').innerText = "Share Live Location (Optional)";
+                document.getElementById('loc-title-text').innerHTML = '<i class="fas fa-map-marker-alt"></i> Share Live Location';
+                document.getElementById('loc-status-text').innerText = "Tap to enable map";
+                
+                // Reset Swipe Button
+                document.getElementById('swipe-handle').style.left = '0';
+                document.getElementById('swipe-bg').style.width = '0';
 
-                showToast("Order Placed Successfully!"); showPage('orders');
-            } catch(e){showToast(e.message,"error");} finally{toggleLoader(false);}};
+                // Success Animation
+                toggleLoader(false);
+                const overlay = document.getElementById('success-overlay');
+                overlay.style.opacity = '1';
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    showPage('orders');
+                }, 2000);
+            } catch(e){
+                toggleLoader(false);
+                document.getElementById('swipe-handle').style.left = '0';
+                document.getElementById('swipe-bg').style.width = '0';
+                showToast(e.message,"error");
+            } 
+        };
         
         // --- ORDERS LISTENER ---
         function listenToOrders(){
@@ -894,7 +1078,6 @@
                         footerHtml = `<div class="pay-method-text"><i class="fas fa-mobile-alt" style="color:var(--primary)"></i> ${d.payment.method.toUpperCase()}</div><div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.8rem; font-weight:700; color:${isPaid?'var(--success)':'#FF9800'}">${isPaid?'PAID':'PENDING'}</span><button class="view-pay-btn" onclick="viewPaymentDetails('${d.payment.method}', '${d.payment.senderNumber}', '${d.payment.trxId}', '${payAmount}')">View Info</button></div>`;
                     }
                     
-                    // Add Location Button Logic (If missing)
                     let locBtn = '';
                     if((!d.location || !d.location.enabled) && d.status !== 'cancelled' && d.status !== 'delivered') {
                         locBtn = `<div style="padding:0 15px 10px 15px;"><button class="share-loc-btn" onclick="attachLocationToOrder('${d.id}')">📍 Share Live Location</button></div>`;

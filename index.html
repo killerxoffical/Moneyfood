@@ -507,21 +507,10 @@
         .confirm-msg { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; }
         .btn-confirm-yes { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .btn-confirm-yes:active { transform: scale(0.98); }
-
-        .arrival-popup { position: fixed; inset: 0; z-index: 6500; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-        .arrival-popup.active { opacity: 1; pointer-events: auto; }
-        .arrival-card { background: linear-gradient(145deg, var(--bg-card), var(--input-bg)); width: 90%; max-width: 340px; border-radius: 24px; padding: 30px; text-align: center; box-shadow: 0 15px 50px rgba(0,0,0,0.4); border: 1px solid var(--border-color); animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
-        .arrival-card::before { content: ''; position: absolute; top: -50px; left: -50px; width: 100px; height: 100px; background: var(--primary); opacity: 0.1; border-radius: 50%; filter: blur(20px); }
+        
         @keyframes popUp { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-        .arrival-icon-box { width: 80px; height: 80px; background: rgba(255, 87, 34, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 2.5rem; animation: pulse-orange 2s infinite; border: 2px solid rgba(255, 87, 34, 0.2); }
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(255, 87, 34, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); } }
-        .arrival-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
-        .arrival-msg { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; line-height: 1.5; }
-        .arrival-actions { display: flex; gap: 12px; }
-        .btn-arrival { flex: 1; padding: 14px; border-radius: 14px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
-        .btn-arr-chat { background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); }
-        .btn-arr-ok { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3); }
-        .btn-arrival:active { transform: scale(0.96); }
+        
 
         .auth-container { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; background: var(--bg-card); padding: 30px; position: fixed; top: 0; left: 0; width: 100%; z-index: 200; overflow-y: auto; }
         .auth-logo-box { text-align: center; margin-bottom: 30px; }
@@ -626,19 +615,6 @@
                 অর্ডারটি কনফার্ম করার আগে দয়া করে পড়ুন। ফেইক অর্ডার বা অর্ডার করে ক্যানসেল করলে আমাদের অনেক ক্ষতি হয়। তাই নিশ্চিত হয়ে অর্ডার করুন। রাইডার কনফার্মেশনের জন্য কল করতে পারে, দয়া করে ফোন ধরবেন।
             </div>
             <button id="btn-confirm-final" class="btn-confirm-yes disabled" onclick="confirmAndPlaceOrder()">অপেক্ষা করুন (5s)</button>
-        </div>
-    </div>
-
-    <!-- ARRIVAL MODAL (PREMIUM UI) -->
-    <div id="arrival-modal" class="arrival-popup">
-        <div class="arrival-card">
-            <div class="arrival-icon-box"><i class="fas fa-motorcycle"></i></div>
-            <div class="arrival-title">রাইডার চলে এসেছে!</div>
-            <div class="arrival-msg" id="arrival-rider-name">আপনার রাইডার লোকেশনে পৌঁছে গেছে। অনুগ্রহ করে অর্ডারটি সংগ্রহ করুন।</div>
-            <div class="arrival-actions">
-                <button class="btn-arrival btn-arr-chat" onclick="openChatFromArrival()">মেসেজ করুন</button>
-                <button class="btn-arrival btn-arr-ok" onclick="closeArrivalModal()">ঠিক আছে</button>
-            </div>
         </div>
     </div>
 
@@ -1571,6 +1547,28 @@
         /* =========================================
            SECTION: CHECKOUT & ORDERS
            ========================================= */
+        
+        // NEWLY ADDED: The missing setTip function
+        window.setTip = (amount, el, isManual = false) => {
+            riderTip = parseInt(amount) || 0;
+            document.querySelectorAll('.tip-card').forEach(c => c.classList.remove('selected'));
+            if (el) {
+                el.classList.add('selected');
+                document.getElementById('tip-manual').value = "";
+            }
+            if (isManual) {
+                const matchingButton = [...document.querySelectorAll('.tip-card')].find(card => {
+                    const onclickValue = card.getAttribute('onclick');
+                    const valueInButton = parseInt(onclickValue.match(/setTip\((\d+)/)[1]);
+                    return valueInButton === riderTip;
+                });
+                if (matchingButton) {
+                    matchingButton.classList.add('selected');
+                }
+            }
+            calculateCheckoutTotal();
+        };
+
         function showFinalCheckoutPage(){
             const checkoutCart = cart.filter(item => item.restaurantId === checkoutRestaurantId);
             if(!checkoutCart.length)return showCustomAlert("Your cart for this restaurant is empty!");
@@ -1676,15 +1674,8 @@
         window.confirmAndPlaceOrder = async () => { document.getElementById('confirm-order-modal').classList.remove('active'); if(isOrderProcessing) return; isOrderProcessing = true; toggleLoader(true); const checkoutCart = cart.filter(item => item.restaurantId === checkoutRestaurantId); const restaurant = restaurants.find(r => r.id === checkoutRestaurantId); const userArea = currentUserProfile.address.area; const baseDeliveryFee = restaurant.deliveryCharges?.[userArea] || 35; const sub = checkoutCart.reduce((a,b)=>a+b.price*b.qty,0); const isFreeDelivery = (userTotalDeliveredOrders % 7) === 6; let del = baseDeliveryFee; if(isFreeDelivery) del = 0; if(deliveryPriority === 'fast') del += 20; const preGrand = sub + del + riderTip; let finalCashOutFee = 0; if(selectedPayment !== 'cod') finalCashOutFee = Math.ceil((preGrand / 1000) * 15); const grand = preGrand + finalCashOutFee; const riderNote = document.getElementById('rider-note').value; const mapLink = document.getElementById('location-link-input').value; if(mapLink) { locationData.manualLink = mapLink; locationData.enabled = true; } let payInfo={method:selectedPayment, status:'pending'}; if(selectedPayment !== 'cod'){ const s=document.getElementById(`sender-${selectedPayment}`).value; const t=document.getElementById(`trx-${selectedPayment}`).value; payInfo={ ...payInfo, senderNumber:s, trxId:t, amount:preGrand, cashOutCharge:finalCashOutFee, finalPayable:grand, adminNumber:appSettings.paymentNumbers[selectedPayment] }; } else { payInfo.status='cod'; payInfo.finalPayable = grand; } try { const orderRef = push(ref(db, `orders/${currentUser.uid}`)); await set(orderRef, { userId:currentUser.uid, restaurantId: checkoutRestaurantId, address:currentUserProfile.address, items:checkoutCart, totals:{ subTotal:sub, deliveryCharge:del, riderTip:riderTip, cashOutFee:finalCashOutFee, grandTotal:grand }, payment:payInfo, location:locationData, riderNote: riderNote, status:'pending', createdAt:serverTimestamp(), deliveryPriority: deliveryPriority }); cart = cart.filter(item => item.restaurantId !== checkoutRestaurantId); localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI(); renderGlobalCartPage(); resetCheckoutState(); showPage('orders'); toggleLoader(false); const overlay = document.getElementById('success-overlay'); overlay.style.opacity = '1'; setTimeout(() => { overlay.style.opacity = '0'; isOrderProcessing = false; }, 2000); } catch(e){ isOrderProcessing = false; toggleLoader(false); resetSwipe(); showCustomAlert(e.message); } };
         function listenToOrders(){ if(!currentUser)return; onValue(ref(db,`orders/${currentUser.uid}`),s=>{ const al=document.getElementById('orders-list'), hl=document.getElementById('history-list'); al.innerHTML=""; hl.innerHTML=""; if(!s.exists()){al.innerHTML="<p style='text-align:center; margin-top:20px; color:var(--text-muted)'>No active orders</p>"; return;} const o=[]; s.forEach(c => { if(c.val() && c.val().status) o.push({id:c.key, ...c.val()}); }); o.sort((a,b)=>b.createdAt-a.createdAt); let deliveredOrders=0, totalSpent=0, totalCompetitorCost = 0, deliveryCostSaved = 0; o.forEach(d=>{ const isHist = d.status==='delivered' || d.status==='cancelled'; const payAmount = d.payment.finalPayable || d.totals.grandTotal; 
         
-        // REMOVED: Rider arrival modal call as requested
-        // if (d.status === 'ontheway' && d.riderAlert) { 
-        //    showArrivalModal(d.riderName || "Rider", d.id, d.riderId); 
-        // } 
-        
         if(d.status === 'delivered') { if (deliveredOrders % 7 === 6) { deliveryCostSaved += 35; } deliveredOrders++; totalSpent += payAmount; let compItemsTotalForThisOrder = d.items.reduce((a, i) => a + (i.competitorPrice || Math.ceil(i.price * 1.15)) * i.qty, 0); totalCompetitorCost += compItemsTotalForThisOrder + d.totals.deliveryCharge + (d.totals.riderTip || 0) + (d.payment.cashOutCharge || 0); if(d.riderId) { remove(ref(db, `chats/${d.id}`)); } } let bannerUrl = "https://firebasestorage.googleapis.com/v0/b/viptask-5c1fc.appspot.com/o/FOOD%20APP%2FAddText_02-03-05.58.24.png?alt=media&token=1628bba5-6fd0-4c6c-a25c-150a3411de56"; if(d.status === 'delivered') bannerUrl = "https://firebasestorage.googleapis.com/v0/b/viptask-5c1fc.appspot.com/o/FOOD%20APP%2FOdder%20compelet.png?alt=media&token=fff2254f-e127-4be1-b155-850a76b69d7c"; const steps = ['pending', 'accepted', 'ontheway', 'delivered']; const currentStepIdx = steps.indexOf(d.status.toLowerCase()); const renderStep = (label, idx, icon) => { let cls = ''; if(d.status === 'cancelled') cls = 'cancelled'; else if(idx <= currentStepIdx) cls = 'active'; return `<div class="step ${cls}"><div class="step-circle"><i class="fas ${icon}"></i></div><div class="step-label">${label}</div></div>`; }; let footerHtml = '', bengaliMsg = ''; if(d.status === 'cancelled') { footerHtml = `<div class="cancelled-badge">⚠️ ORDER CANCELLED</div>`; } else if(d.payment.method === 'cod') { footerHtml = `<div class="pay-method-text"><i class="fas fa-money-bill-wave" style="color:#4CAF50"></i> Cash on Delivery</div><div class="collect-badge">COLLECT: ${formatPrice(payAmount)}</div>`; } else { const isPaid = d.payment.status === 'approved' || d.status === 'delivered'; let statusText = isPaid ? `<span class="online-paid-text">ONLINE PAID</span>` : `<span style="font-size:0.8rem; font-weight:700; color:#FF9800">PENDING</span>`; if(!isPaid) bengaliMsg = `<div class="bengali-warning">অ্যাডমিন পেমেন্ট যাচাই করে অ্যাপ্রুভ করলে স্ট্যাটাস পেইড হয়ে যাবে, চিন্তার কোনো কারণ নেই।</div>`; footerHtml = `<div class="pay-method-text"><i class="fas fa-mobile-alt" style="color:var(--primary)"></i> ${d.payment.method.toUpperCase()}</div><div style="display:flex; align-items:center; gap:10px;">${statusText}<button class="view-pay-btn" onclick="viewPaymentDetails('${d.payment.method}', '${d.payment.senderNumber}', '${d.payment.trxId}', '${payAmount}')">View Info</button></div>`; } let locBtn = ''; if((!d.location || !d.location.enabled) && !isHist) { locBtn = `<div style="padding:0 15px 15px 15px;"><button class="live-loc-order-btn" onclick="attachLocationToOrder('${d.id}')"><i class="fas fa-map-marker-alt"></i> Share Live Location</button></div>`; } let chatBtn = ''; if(d.riderId && !isHist) { chatBtn = `<div class="chat-btn-circle" id="chat-btn-${d.id}" onclick="openChat('${d.id}', '${d.riderId}', '${d.riderName}')"><i class="fas fa-comment-dots"></i><div class="chat-red-dot" id="badge-${d.id}"></div></div>`; listenChat(d.id, d.riderName || 'Rider'); } const itemsHtml = d.items.map(i => `<div class="item-row"><img src="${i.image}" class="item-thumb"><div class="item-details"><div>${i.qty}x ${i.name}</div></div><div class="item-price">${formatPrice(i.price * i.qty)}</div></div>`).join(''); let emergencyBadge = d.deliveryPriority === 'fast' ? `<span style="background:#FF3D00; color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-left:10px;">EMERGENCY ⚡</span>` : ''; const html = `<div class="order-card-new"><img src="${bannerUrl}" class="order-banner"><div class="order-header-info"><div style="display:flex; justify-content:space-between; align-items:center"><div><span class="order-code-lg">ORDER #${d.id.slice(-6).toUpperCase()} ${emergencyBadge}</span><span class="order-date-sm">${new Date(d.createdAt).toLocaleString()}</span></div>${chatBtn}</div></div><div class="stepper-wrapper"><div class="stepper">${renderStep('Pending', 0, 'fa-clock')}${renderStep('Accepted', 1, 'fa-check')}${renderStep('On Way', 2, 'fa-motorcycle')}${renderStep('Completed', 3, 'fa-home')}</div></div>${bengaliMsg}<div class="order-items-toggle" onclick="toggleItems(this)"><span><i class="fas fa-list"></i> View Items (${d.items.reduce((a,b)=>a+b.qty,0)})</span><i class="fas fa-chevron-down"></i></div><div class="order-items-list">${itemsHtml}<div class="total-bill-row"><span>Total Bill</span><span>${formatPrice(payAmount)}</span></div></div>${locBtn}<div class="payment-footer">${footerHtml}</div>${d.status==='delivered' && !d.rating ? `<div style="padding:0 15px 15px 15px"><button class="btn btn-sm btn-outline" style="width:100%" onclick="openRating('${d.id}')">Rate Order</button></div>`:''}</div>`; if(isHist) { hl.innerHTML += html; } else { al.innerHTML += html; } }); userTotalDeliveredOrders = deliveredOrders; const totalSavedAmount = Math.max(0, (totalCompetitorCost - totalSpent)); document.getElementById('rep-competitor').innerText = formatPrice(totalCompetitorCost); document.getElementById('rep-spent').innerText = formatPrice(totalSpent); document.getElementById('rep-del-saved').innerText = formatPrice(deliveryCostSaved); document.getElementById('rep-saved').innerText = formatPrice(totalSavedAmount); renderLoyaltyTrack(deliveredOrders); }); }
-        function showArrivalModal(riderName, orderId, riderId) { document.getElementById('arrival-modal').classList.add('active'); currentArrivalOrderId = orderId; activeChatRiderId = riderId; }
-        window.closeArrivalModal = () => { document.getElementById('arrival-modal').classList.remove('active'); };
-        window.openChatFromArrival = () => { closeArrivalModal(); if(currentArrivalOrderId) { openChat(currentArrivalOrderId, activeChatRiderId, "Rider"); } };
+        
         function renderLoyaltyTrack(deliveredCount) { const container = document.getElementById('loyalty-track-container'); if(!container) return; const position = deliveredCount % 7; let html = ''; for(let i=0; i<6; i++) { const isFilled = i < position; html += `<div class="track-step ${isFilled ? 'filled' : ''}">${isFilled ? '<i class="fas fa-check"></i>' : (i+1)}</div>`; } const isFreeActive = (position === 6); html += `<div class="track-step free-step ${isFreeActive ? 'active' : ''}"><i class="fas fa-gift"></i></div><div class="track-line"></div><div class="track-progress" style="width:${Math.min((position / 6) * 100, 100)}%"></div>`; container.innerHTML = html; }
         window.toggleItems = (btn) => { resetIdleTimer(); const list = btn.nextElementSibling; list.classList.toggle('expanded'); const icon = btn.querySelector('.fa-chevron-down') || btn.querySelector('.fa-chevron-up'); icon.className = list.classList.contains('expanded') ? 'fas fa-chevron-up' : 'fas fa-chevron-down'; };
         window.viewPaymentDetails = (method, sender, trx, amount) => { document.getElementById('md-method').innerText = method.toUpperCase(); document.getElementById('md-sender').innerText = sender; document.getElementById('md-trx').innerText = trx; document.getElementById('md-amount').innerText = formatPrice(amount); document.getElementById('pay-details-modal').classList.remove('hidden'); };
